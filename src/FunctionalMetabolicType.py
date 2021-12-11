@@ -23,49 +23,97 @@ class FunctionalMetabolicType():
         self._step9()
         self._step10()
         
-        if (len(self.sortedGroups) > 0):
+        if (len(self.sortedGroups) > 0 and self.metabolicType == 0):
             if (self.sortedGroups[0][0] == 'A'):
-                self._step4()
+                self._step4('A')
             elif (self.sortedGroups[0][0] == 'B'):
-                self._step5()
+                self._step5('B')
             elif (self.sortedGroups[0][0] == 'C'):
-                self._step6()
+                self._step6('C')
             elif (self.sortedGroups[0][0] == 'D'):
-                self._step7()
+                self._step7('D')
 
-        print('Your Functional Metabolic Type: {0}'.format(self.metabolicType))
         return self.metabolicType
+
+    def calculateSubtype(self, metabolicType):
+        del self.columns[str(metabolicType)]
+        return sorted(self.columns.items(), key=operator.itemgetter(1), reverse=True)[0][0]
 
     #
     # Private Methods
     # 
-    def _step7(self):
+    def _step7(self, group, step=7):
+        self._handleColumnsWithSameValue(group, step)
         if (self.metabolicType > 0):
             return
 
-    def _step6(self):
+        sortedColumns = sorted(self.groupColumns[group]['dict'].items(), key=operator.itemgetter(1), reverse=True)
+        self.metabolicType = int(sortedColumns[0][0])
+
+    def _step6(self, group, step=6):
+        self._handleColumnsWithSameValue(group, step)
         if (self.metabolicType > 0):
             return
 
-    def _step5(self):
+        sortedColumns = sorted(self.groupColumns[group]['dict'].items(), key=operator.itemgetter(1), reverse=True)
+        self.metabolicType = int(sortedColumns[0][0])
+
+    def _step5(self, group, step=5):
+        self._handleColumnsWithSameValue(group, step)
         if (self.metabolicType > 0):
             return
 
-    def _step4(self):
+        sortedColumns = sorted(self.groupColumns[group]['dict'].items(), key=operator.itemgetter(1), reverse=True)
+        self.metabolicType = int(sortedColumns[0][0])
+
+    def _step4(self, group, step=4):
+        # part f
+        self._handleColumnsWithSameValue(group, step)
         if (self.metabolicType > 0):
             return
+
+        sortedColumns = sorted(self.groupColumns[group]['dict'].items(), key=operator.itemgetter(1), reverse=True)
+        highestColumnValue = int(sortedColumns[0][0])
+        if (highestColumnValue == 6):
+            self.metabolicType = 4
+        else:
+            self.metabolicType = highestColumnValue
+        
+    def _handleColumnsWithSameValue(self, group, step):
+        groupColumnsSet = set(self.groupColumns[group]['values'])
+        columnsWithSameTotals = self._getGroupsWithSameTotals(self.groupColumns[group]['dict'], toInt=True)
+        if (len(groupColumnsSet) == 1 and (step == 4 or step == 5)):
+            print('Step {0}: All columns within Group {1} are the same value: {2}'.format(step, group, list(groupColumnsSet)[0]))
+            if (step == 4):
+                self.metabolicType = 1
+            elif (step == 5):
+                self.metabolicType = 2
+        elif (len(columnsWithSameTotals) == 3):
+            print('Step {0}: Three columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
+            if (step == 6):
+                self.metabolicType = 8
+            elif (step == 7):
+                self.metabolicType = 3
+            else:
+                self.metabolicType = sorted(columnsWithSameTotals)[0]
+        elif (len(columnsWithSameTotals) == 2):
+            print('Step {0}: Two columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
+            if (step == 7):
+                self.metabolicType = 3
+            else:
+                self.metabolicType = sorted(columnsWithSameTotals)[0]
 
     def _step10(self):
         if (self.metabolicType > 0):
             return
         
-        groupsWithSameTotals = self._getGroupsWithSameTotals()
+        groupsWithSameTotals = self._getGroupsWithSameTotals(self.groupTotals)
         if (len(groupsWithSameTotals) == 2):
             print('Step 10: Two groups are the same value: {0}'.format(groupsWithSameTotals))
             
             twoOrMore = 0
-            columnsForFirstGroup = self.groupColumns[groupsWithSameTotals[0]]
-            columnsForSecondGroup = self.groupColumns[groupsWithSameTotals[1]]
+            columnsForFirstGroup = self.groupColumns[groupsWithSameTotals[0]]['columns']
+            columnsForSecondGroup = self.groupColumns[groupsWithSameTotals[1]]['columns']
             firstSortedColumnValue = self.sortedColumns[0][1]
             secondSortedColumnValue = self.sortedColumns[1][1]
             for column in sum([columnsForFirstGroup, columnsForSecondGroup], []):
@@ -109,15 +157,16 @@ class FunctionalMetabolicType():
             self.metabolicType = 8
 
 
-    def _getGroupsWithSameTotals(self):
+    def _getGroupsWithSameTotals(self, d, toInt=False):
         totals = {}
         sameTotals = []
-        for key in self.groupTotals:
-            if self.groupTotals[key] in totals:
-                totals[self.groupTotals[key]].append(key)
-                sameTotals = totals[self.groupTotals[key]][:]
+        for key in d:
+            keyValue = str(key) if (not toInt) else int(key)
+            if d[key] in totals:
+                totals[d[key]].append(keyValue)
+                sameTotals = totals[d[key]][:]
             else:
-                totals[self.groupTotals[key]] = [key]
+                totals[d[key]] = [keyValue]
 
         return sameTotals
         
@@ -126,7 +175,7 @@ class FunctionalMetabolicType():
         if (self.metabolicType > 0):
             return
         
-        groupsWithSameTotals = self._getGroupsWithSameTotals()
+        groupsWithSameTotals = self._getGroupsWithSameTotals(self.groupTotals)
         if (len(groupsWithSameTotals) == 3):
             print('Step 9: Three groups are the same value: {0}'.format(groupsWithSameTotals))
             self.metabolicType = 8
@@ -154,10 +203,44 @@ class FunctionalMetabolicType():
         print('Step 3: Set groups totals: {0}'.format(self.groupTotals))
 
         self.groupColumns = {
-            'A': [1, 4, 6, 11],
-            'B': [2, 5, 7, 12],
-            'C': [8, 9, 10],
-            'D': [3, 6, 7]
+            'A': {
+                'columns': [1, 4, 6, 11],
+                'values': [self.columns['1'], self.columns['4'], self.columns['6'], self.columns['11']],
+                'dict': {
+                    '1': self.columns['1'],
+                    '4': self.columns['4'],
+                    '6': self.columns['6'],
+                    '11': self.columns['11']
+                }
+            },
+            'B': {
+                'columns': [2, 5, 7, 12],
+                'values': [self.columns['2'], self.columns['5'], self.columns['7'], self.columns['12']],
+                'dict': {
+                    '2': self.columns['2'],
+                    '5': self.columns['5'],
+                    '7': self.columns['7'],
+                    '12': self.columns['12']
+                }
+            },
+            'C': {
+                'columns': [8, 9, 10],
+                'values': [self.columns['8'], self.columns['9'], self.columns['10']],
+                'dict': {
+                    '8': self.columns['8'],
+                    '9': self.columns['9'],
+                    '10': self.columns['10']
+                }
+            },
+            'D': {
+                'columns': [3, 6, 7],
+                'values': [self.columns['3'], self.columns['6'], self.columns['7']],
+                'dict': {
+                    '3': self.columns['3'],
+                    '6': self.columns['6'],
+                    '7': self.columns['7']
+                }
+            }
         }
         
         print('Step 3: Set groups columns: {0}'.format(self.groupColumns))
