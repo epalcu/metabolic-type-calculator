@@ -1,23 +1,11 @@
 from FunctionalMetabolicType import FunctionalMetabolicType
 
 if (__name__ == '__main__'):
-    functionalMetabolicType = FunctionalMetabolicType()
-    metabolicType = functionalMetabolicType.calculate([
-        115,
-        69,
-        14,
-        88,
-        110,
-        50,
-        40,
-        174,
-        106,
-        214,
-        137,
-        87
-    ])
+    functionalMetabolicType = FunctionalMetabolicType(True)
+    
+    metabolicType = functionalMetabolicType.calculate([103, 44, 37, 133, 97, 89, 57, 137, 108, 171, 109, 64])
     groups = functionalMetabolicType.groupTotals
-    subtype = functionalMetabolicType.calculateSubtype(metabolicType)
+    subtype = functionalMetabolicType.calculateSubType(metabolicType)
     
     print('\r\nFunctional Test A{0}{1}{2}{3}'.format(
         '\r\nGroup A: {0}'.format(groups['A']),

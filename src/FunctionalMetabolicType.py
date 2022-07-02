@@ -4,13 +4,14 @@ class FunctionalMetabolicType():
     #
     # Constructor
     #
-    def __init__(self):
+    def __init__(self, verbose=True):
         self.metabolicType = 0
         self.columns = {}
         self.sortedColumns = []
         self.groupTotals = {}
         self.groupColumns = {}
         self.sortedGroups = []
+        self.verbose = verbose
 
     #
     # Public Methods
@@ -35,9 +36,9 @@ class FunctionalMetabolicType():
 
         return self.metabolicType
 
-    def calculateSubtype(self, metabolicType):
+    def calculateSubType(self, metabolicType):
         del self.columns[str(metabolicType)]
-        return sorted(self.columns.items(), key=operator.itemgetter(1), reverse=True)[0][0]
+        return int(sorted(self.columns.items(), key=operator.itemgetter(1), reverse=True)[0][0])
 
     #
     # Private Methods
@@ -75,13 +76,13 @@ class FunctionalMetabolicType():
         groupColumnsSet = set(self.groupColumns[group]['values'])
         columnsWithSameTotals = self._getGroupsWithSameTotals(self.groupColumns[group]['dict'], toInt=True)
         if (len(groupColumnsSet) == 1 and (step == 4 or step == 5)):
-            print('Step {0}: All columns within Group {1} are the same value: {2}'.format(step, group, list(groupColumnsSet)[0]))
+            self._printOutput('Step {0}: All columns within Group {1} are the same value: {2}'.format(step, group, list(groupColumnsSet)[0]))
             if (step == 4):
                 self._setMetabolicType(1)
             elif (step == 5):
                 self._setMetabolicType(2)
         elif (len(columnsWithSameTotals) == 3):
-            print('Step {0}: Three columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
+            self._printOutput('Step {0}: Three columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
             if (step == 6):
                 self._setMetabolicType(8)
             elif (step == 7):
@@ -89,7 +90,7 @@ class FunctionalMetabolicType():
             else:
                 self._setMetabolicType(sorted(columnsWithSameTotals)[0])
         elif (len(columnsWithSameTotals) == 2):
-            print('Step {0}: Two columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
+            self._printOutput('Step {0}: Two columns within Group {1} are the same value: {2}'.format(step, group, columnsWithSameTotals))
             if (step == 7):
                 self._setMetabolicType(3)
             else:
@@ -98,7 +99,7 @@ class FunctionalMetabolicType():
     def _step10(self):
         groupsWithSameTotals = self._getGroupsWithSameTotals(self.groupTotals)
         if (len(groupsWithSameTotals) == 2):
-            print('Step 10: Two groups are the same value: {0}'.format(groupsWithSameTotals))
+            self._printOutput('Step 10: Two groups are the same value: {0}'.format(groupsWithSameTotals))
             
             twoOrMore = 0
             columnsForFirstGroup = self.groupColumns[groupsWithSameTotals[0]]['columns']
@@ -108,7 +109,7 @@ class FunctionalMetabolicType():
             for column in sum([columnsForFirstGroup, columnsForSecondGroup], []):
                 columnValue = self.columns[str(column)]
                 if (columnValue == firstSortedColumnValue and firstSortedColumnValue > secondSortedColumnValue):
-                    print('Step 10: Column has higher value than any other column: {0}'.format(column))
+                    self._printOutput('Step 10: Column has higher value than any other column: {0}'.format(column))
                     self._setMetabolicType(column)
                     break
                 elif (columnValue == firstSortedColumnValue):
@@ -118,28 +119,28 @@ class FunctionalMetabolicType():
 
     def _checkIfColumnsSameHighestTotal(self, twoOrMore, firstSortedColumnValue):
         if (twoOrMore > 2 or (self.columns['1'] == firstSortedColumnValue and self.columns['4'] == firstSortedColumnValue)):
-            print('Step 10: Columns 1 and 4 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 1 and 4 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(1)
         elif (self.columns['4'] == firstSortedColumnValue and self.columns['6'] == firstSortedColumnValue):
-            print('Step 10: Columns 4 and 6 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 4 and 6 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(4)
         elif (self.columns['2'] == firstSortedColumnValue and self.columns['5'] == firstSortedColumnValue):
-            print('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(2)
         elif (self.columns['5'] == firstSortedColumnValue and self.columns['7'] == firstSortedColumnValue):
-            print('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(5)
         elif (self.columns['3'] == firstSortedColumnValue and self.columns['6'] == firstSortedColumnValue):
-            print('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(3)
         elif (self.columns['3'] == firstSortedColumnValue and self.columns['7'] == firstSortedColumnValue):
-            print('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(3)
         elif (self.columns['11'] == firstSortedColumnValue and self.columns['12'] == firstSortedColumnValue):
-            print('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
+            self._printOutput('Step 10: Columns 2 and 5 have higher values than any other column: {0}'.format(firstSortedColumnValue))
             self._setMetabolicType(10)
         else:
-            print('Step 10: No two or more columns have higher values than any other column.')
+            self._printOutput('Step 10: No two or more columns have higher values than any other column.')
             self._setMetabolicType(8)
 
 
@@ -160,13 +161,13 @@ class FunctionalMetabolicType():
     def _step9(self):
         groupsWithSameTotals = self._getGroupsWithSameTotals(self.groupTotals)
         if (len(groupsWithSameTotals) == 3):
-            print('Step 9: Three groups are the same value: {0}'.format(groupsWithSameTotals))
+            self._printOutput('Step 9: Three groups are the same value: {0}'.format(groupsWithSameTotals))
             self._setMetabolicType(8)
 
     def _step8(self):
         groupsSet = set(self.groupTotals.values())
         if (len(groupsSet) == 1):
-            print('Step 8: All groups are the same value: {0}'.format(list(groupsSet)[0]))
+            self._printOutput('Step 8: All groups are the same value: {0}'.format(list(groupsSet)[0]))
             self._setMetabolicType(8)
         
     def _step3(self):
@@ -177,7 +178,7 @@ class FunctionalMetabolicType():
             'D': self.columns['3'] + self.columns['6'] + self.columns['7']
         }
 
-        print('Step 3: Set groups totals: {0}'.format(self.groupTotals))
+        self._printOutput('Step 3: Set groups totals: {0}'.format(self.groupTotals))
 
         self.groupColumns = {
             'A': {
@@ -220,14 +221,19 @@ class FunctionalMetabolicType():
             }
         }
         
-        print('Step 3: Set groups columns: {0}'.format(self.groupColumns))
+        self._printOutput('Step 3: Set groups columns: {0}'.format(self.groupColumns))
 
         self.sortedGroups = sorted(self.groupTotals.items(), key=operator.itemgetter(1), reverse=True)
 
     def _step2(self):
         highestColumnValue = self.sortedColumns[0]
-        if (highestColumnValue[1] >= 25):
-            print('Step 2: Highest column value {0} is greater than or equal to 25.'.format(highestColumnValue[1]))
+        secondHighestColumnValue = self.sortedColumns[1]
+        
+        if (highestColumnValue[1] >= (secondHighestColumnValue[1]+25)):
+            self._printOutput('Step 2: Highest column value {0} is greater than the second highest column ({1}) plus 25 ({2}).'.format(
+                highestColumnValue[1], 
+                secondHighestColumnValue[1],
+                secondHighestColumnValue[1]+25))
             self._setMetabolicType(int(highestColumnValue[0]))
 
     def _setColumns(self, columnsList):
@@ -245,7 +251,7 @@ class FunctionalMetabolicType():
             '11': columnsList[10],
             '12': columnsList[11]
         }
-        print('Set columns: {0}'.format(self.columns))
+        self._printOutput('Set columns: {0}'.format(self.columns))
 
         self.sortedColumns = sorted(self.columns.items(), key=operator.itemgetter(1), reverse=True)
 
@@ -254,3 +260,7 @@ class FunctionalMetabolicType():
             return
         
         self.metabolicType = value
+
+    def _printOutput(self, output):
+        if (self.verbose):
+            print(output)
