@@ -12,9 +12,11 @@ Run the following command in your console/terminal:
 ## Running the calculator
 Update `testColumns.json` file with the list of functional and developmental column values and run the following command in your console/terminal:
 - `python3 app.py`
-- Example Output: 
+- Example run: 
 
 ```
+elliass-MacBook-Pro-2:src epalcu$ python3 app.py
+
 functional Test 
 Group A: 369
 Group B: 420
