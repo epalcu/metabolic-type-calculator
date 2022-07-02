@@ -1,6 +1,6 @@
 import operator
 
-class FunctionalMetabolicType():
+class MetabolicTypeCalculator():
     #
     # Constructor
     #
