@@ -5,10 +5,14 @@ Python program that, based on the column input, determines what functional and d
 ## Depenendencies
 - Python 3
 
-## Running locally
-- pip install -r requirements.txt
-- Update `testColumns.json` file with the list of functional and developmental column values
-- python3 app.py
+## Setting up locally (only done once)
+Run the following command in your console/terminal:
+- `pip install -r requirements.txt`
+
+## Running the calculator
+Update `testColumns.json` file with the list of functional and developmental column values and run the following command in your console/terminal:
+- `python3 app.py`
 
 ## Running tests
-- python -m pytest
+Update `metabolicTestCases.json` file with another test case and run the following command in your console/terminal:
+- `python -m pytest`
